@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Portfolio BTS SIO option SISR de Tomas Latour, alternant aux Écoles Vidal à Toulouse.">
+<title>Portfolio Tomas Latour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+/* =========================================================
+   1. LES COULEURS ET LES POLICES (les "variables")
+   On les définit une seule fois ici, puis on les réutilise
+   partout avec var(--nom). Pour changer une couleur sur tout
+   le site, il suffit de la changer ici.
+   ========================================================= */
+
+/* Mode SOMBRE (c'est le mode par défaut) */
+:root {
+  --fond: #111315;          /* fond de la page */
+  --fond-2: #1b1e21;        /* fond des cartes et des bandeaux */
+  --fond-3: #25292d;        /* fond au survol, petites étiquettes */
+  --texte: #eef0f1;         /* texte principal */
+  --texte-doux: #a4abb1;    /* texte secondaire (dates, lieux) */
+  --trait: #31363b;         /* bordures et séparateurs */
+  --accent: #4fd1c5;        /* couleur qui ressort (boutons, liens) */
+  --reseau: 79, 209, 197;   /* couleur des points du réseau animé (en R, G, B) */
+
+  --police-titre: "Jost", "Futura", "Century Gothic", sans-serif;
+  --police-texte: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --police-code: "JetBrains Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+
+/* Mode CLAIR quand l'ordinateur du visiteur est réglé en clair */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --fond: #f4f6f7; --fond-2: #ffffff; --fond-3: #e8ecee;
+    --texte: #15191c; --texte-doux: #5a646b; --trait: #d7dde1;
+    --accent: #0e8277; --reseau: 14, 130, 119;
+    color-scheme: light;
+  }
+}
+/* Mode CLAIR quand le visiteur clique sur le bouton */
+:root[data-theme="light"] {
+  --fond: #f4f6f7; --fond-2: #ffffff; --fond-3: #e8ecee;
+  --texte: #15191c; --texte-doux: #5a646b; --trait: #d7dde1;
+  --accent: #0e8277; --reseau: 14, 130, 119;
+  color-scheme: light;
+}
+
+/* =========================================================
+   2. LES RÉGLAGES DE BASE
+   ========================================================= */
+* { box-sizing: border-box; }   /* les bordures sont comptées dans la largeur */
+html { scroll-behavior: smooth; } /* défilement doux quand on clique dans le menu */
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police-texte);
+  font-size: 17px;
+  line-height: 1.65;
+}
+a { color: var(--accent); }
+p { margin: 0 0 14px; max-width: 68ch; }  /* 68ch = environ 68 caractères par ligne, plus agréable à lire */
+
+/* Le "conteneur" centre le contenu et laisse une marge sur les côtés (16px minimum sur téléphone) */
+.conteneur {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Les grands titres fins en majuscules, comme sur le site d'Adrien */
+h1, h2 {
+  font-family: var(--police-titre);
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-wrap: balance;
+  margin: 0;
+}
+h2 { font-size: clamp(2rem, 4.5vw, 3rem); text-align: center; margin-bottom: 40px; }
+h3 {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 8px;
+}
+h4 { font-size: 1rem; margin: 22px 0 8px; color: var(--accent); }
+
+/* Petite étiquette en police "code" (dates, numéros) */
+.etiquette {
+  font-family: var(--police-code);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+/* Une "section" = un bloc de la page (Parcours, Missions...) */
+section { padding-block: 88px; }
+.section-sombre { background: var(--fond-2); }  /* une section sur deux a un fond différent */
+
+/* =========================================================
+   3. L'EN-TÊTE ET LE MENU (collés en haut de l'écran)
+   ========================================================= */
+/* Bande de couleur sous la barre d'état des téléphones */
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--fond);
+}
+.entete {
+  position: sticky;                      /* reste en haut quand on descend */
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: var(--fond);
+  border-bottom: 1px solid var(--trait);
+}
+.entete-haut {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding-block: 14px;
+}
+.marque { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--texte); }
+.marque img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.marque strong { font-family: var(--police-titre); font-weight: 500; letter-spacing: 0.04em; display: block; line-height: 1.2; }
+.marque span { font-size: 0.8rem; color: var(--texte-doux); }
+
+/* Le menu : les liens défilent sur le côté si l'écran est trop petit */
+.menu {
+  display: flex; gap: 22px;
+  overflow-x: auto; white-space: nowrap;
+  padding-bottom: 12px;
+  font-size: 0.88rem;
+  scrollbar-width: none;
+}
+.menu a { color: var(--texte-doux); text-decoration: none; }
+.menu a:hover { color: var(--texte); }
+
+/* =========================================================
+   4. LES BOUTONS (forme de pilule avec un contour)
+   ========================================================= */
+.bouton {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--police-texte); font-size: 0.92rem;
+  color: var(--texte); background: transparent;
+  border: 1px solid var(--texte); border-radius: 999px;
+  padding: 8px 20px; cursor: pointer; text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.bouton:hover { background: var(--texte); color: var(--fond); }
+.bouton-petit { font-size: 0.8rem; padding: 6px 14px; }
+/* Contour visible quand on navigue au clavier (accessibilité) */
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* =========================================================
+   5. L'ACCUEIL avec le réseau animé en fond
+   ========================================================= */
+.accueil {
+  position: relative;
+  overflow: hidden;
+  padding-block: 120px 110px;
+  text-align: center;
+}
+/* Le <canvas> est la zone de dessin du réseau, placée derrière le texte */
+#reseau { position: absolute; inset: 0; width: 100%; height: 100%; }
+.accueil .conteneur { position: relative; }  /* le texte passe au-dessus du dessin */
+.accueil h1 { font-size: clamp(2.4rem, 7vw, 5rem); }
+.accueil p { margin: 20px auto 32px; color: var(--texte-doux); font-size: 1.1rem; }
+
+/* =========================================================
+   6. À PROPOS : deux colonnes (photo à gauche, texte à droite)
+   ========================================================= */
+.apropos { display: grid; grid-template-columns: 1fr 1.4fr; }
+.apropos-gauche {
+  background: var(--fond-3);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; padding: 48px 24px; text-align: center;
+}
+.apropos-gauche img {
+  width: 170px; height: 170px; border-radius: 50%; object-fit: cover;
+  border: 3px solid var(--accent);
+}
+.faits { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.apropos-droite { padding: 56px clamp(20px, 5vw, 64px); min-width: 0; }
+.apropos-droite h2 { text-align: left; margin-bottom: 24px; }
+
+/* =========================================================
+   7. LES CARTES (parcours, expériences, compétences)
+   "auto-fit" = le nombre de colonnes s'adapte à la largeur de l'écran
+   ========================================================= */
+.grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.carte {
+  background: var(--fond-2);
+  border: 1px solid var(--trait);
+  padding: 30px 24px;
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 0;
+}
+.section-sombre .carte { background: var(--fond); }
+.carte .icone { width: 34px; height: 34px; color: var(--accent); }
+.carte p { margin: 0; color: var(--texte-doux); font-size: 0.95rem; }
+.carte ul { margin: 0; padding-left: 18px; color: var(--texte-doux); font-size: 0.95rem; }
+.carte .bouton { align-self: flex-start; margin-top: auto; }
+
+/* Petites pastilles (outils, compétences) */
+.puces { display: flex; flex-wrap: wrap; gap: 6px; }
+.puce {
+  font-size: 0.82rem; background: var(--fond-3); color: var(--texte);
+  border-radius: 999px; padding: 3px 12px;
+}
+
+/* =========================================================
+   8. LES FICHES MISSIONS
+   ========================================================= */
+.missions { display: flex; flex-direction: column; gap: 20px; }
+.mission { background: var(--fond-2); border: 1px solid var(--trait); padding: 32px clamp(20px, 4vw, 40px); }
+.section-sombre .mission { background: var(--fond); }
+.mission-haut { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px; margin-bottom: 14px; }
+.mission ol, .mission ul { padding-left: 22px; max-width: 70ch; }
+.mission li { margin-bottom: 6px; }
+
+/* Le bouton "Voir les détails" (balise <details>, sans JavaScript) */
+.details > summary { list-style: none; margin-top: 6px; }
+.details > summary::-webkit-details-marker { display: none; }
+.details .masquer { display: none; }
+.details[open] .voir { display: none; }
+.details[open] .masquer { display: inline; }
+
+/* Encadré problème / solution */
+.probleme { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; margin-bottom: 14px; max-width: 70ch; }
+.probleme strong { display: block; }
+
+/* Encadré des compétences en bas de chaque mission */
+.competences-mission { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--trait); }
+
+/* =========================================================
+   9. LES TABLEAUX
+   Ils défilent sur le côté sur téléphone au lieu de déborder
+   ========================================================= */
+.tableau { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { padding: 12px 14px; border-bottom: 1px solid var(--trait); text-align: left; vertical-align: top; }
+th { font-family: var(--police-code); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texte-doux); font-weight: 500; }
+.synthese td:not(:first-child), .synthese th:not(:first-child) { text-align: center; }
+.coche { color: var(--accent); font-weight: 600; }
+.note { color: var(--texte-doux); font-size: 0.9rem; margin-top: 16px; }
+
+/* =========================================================
+   10. CONTACT ET PIED DE PAGE
+   ========================================================= */
+.contact { text-align: center; }
+.contact p { margin: 0 auto 20px; }
+.email { font-family: var(--police-code); font-size: 1.1rem; display: block; margin-bottom: 18px; user-select: all; }
+footer { border-top: 1px solid var(--trait); padding-block: 28px; color: var(--texte-doux); font-size: 0.85rem; text-align: center; }
+
+/* =========================================================
+   11. SUR TÉLÉPHONE (écran de moins de 760px)
+   ========================================================= */
+@media (max-width: 760px) {
+  section { padding-block: 64px; }
+  .apropos { grid-template-columns: 1fr; }  /* les deux colonnes passent l'une sous l'autre */
+  .marque span { display: none; }
+}
+</style>
+</head>
+<body>
+<!-- =========================================================
+     L'EN-TÊTE : photo + nom, bouton clair/sombre, menu
+     ========================================================= -->
+<header class="entete">
+  <div class="conteneur">
+    <div class="entete-haut">
+      <a class="marque" href="#accueil">
+        <img src="data:image/jpeg;base64,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" alt="" width="40" height="40">
+        <div><strong>TOMAS LATOUR</strong><span>BTS SIO SISR · Écoles Vidal</span></div>
+      </a>
+      <button class="bouton bouton-petit" id="bouton-theme" type="button">Mode clair</button>
+    </div>
+    <!-- Chaque lien envoie vers la section qui a le même id (ex : #parcours) -->
+    <nav class="menu">
+      <a href="#apropos">À propos</a>
+      <a href="#parcours">Parcours</a>
+      <a href="#entreprise">Entreprise</a>
+      <a href="#missions">Missions</a>
+      <a href="#competences">Compétences</a>
+      <a href="#synthese">Tableau de synthèse</a>
+      <a href="#veille">Veille</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+
+<!-- =========================================================
+     ACCUEIL : le grand titre sur le réseau animé
+     ========================================================= -->
+<section class="accueil" id="accueil">
+  <canvas id="reseau" aria-hidden="true"></canvas>
+  <div class="conteneur">
+    <div class="etiquette">BTS SIO option SISR · Session 2027</div>
+    <h1>Bienvenue sur mon portfolio</h1>
+    <p>Technicien systèmes et réseaux en alternance aux Écoles Vidal, à Toulouse.</p>
+    <a class="bouton" href="#missions">Voir mes missions</a>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     À PROPOS DE MOI
+     ========================================================= -->
+<div class="apropos" id="apropos">
+  <div class="apropos-gauche">
+    <img src="data:image/jpeg;base64,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" alt="Photo de Tomas Latour" width="170" height="170">
+    <div class="faits">
+      <span class="puce">Toulouse</span>
+      <span class="puce">Alternance</span>
+      <span class="puce">Option SISR</span>
+    </div>
+  </div>
+  <div class="apropos-droite">
+    <h2>À propos de moi</h2>
+    <p>Je m'appelle Tomas Latour et je suis en deuxième année de BTS SIO, option SISR, aux Écoles Vidal à Toulouse. Avant le BTS, j'ai obtenu un bac général avec la spécialité NSI, puis un certificat de spécialisation Services Numériques aux Organisations, avec deux stages dans des lycées toulousains.</p>
+    <p>J'ai choisi l'option SISR parce que ce qui m'intéresse, c'est ce qui se passe derrière les postes : le réseau, les serveurs, les comptes utilisateurs et la sécurité. L'alternance me permet de travailler sur une vraie infrastructure, utilisée chaque jour par des centaines d'élèves et de professeurs.</p>
+    <p>Après mon BTS, je souhaite continuer vers un bachelor en administration systèmes, réseaux et cybersécurité, toujours en alternance, pour devenir administrateur systèmes et réseaux.</p>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     PARCOURS : formations puis expériences, en cartes
+     ========================================================= -->
+<section id="parcours">
+  <div class="conteneur">
+    <h2>Parcours scolaire</h2>
+    <div class="grille">
+      <div class="carte">
+        <!-- Petite icône "diplôme" dessinée en SVG -->
+        <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>
+        <span class="etiquette">2025 – 2027</span>
+        <h3>BTS SIO option SISR</h3>
+        <p>Écoles Vidal, Toulouse · en alternance</p>
+      </div>
+      <div class="carte">
+        <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>
+        <span class="etiquette">2024 – 2025</span>
+        <h3>Certificat de spécialisation SNO</h3>
+        <p>Services Numériques aux Organisations · Lycée Raymond Naves, Toulouse</p>
+      </div>
+      <div class="carte">
+        <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>
+        <span class="etiquette">2022 – 2023</span>
+        <h3>Baccalauréat général</h3>
+        <p>Spécialités SES, HGGSP et NSI · Lycée Jules Fil, Carcassonne</p>
+      </div>
+    </div>
+
+    <h2 style="margin-top: 88px;">Expériences professionnelles</h2>
+    <div class="grille">
+      <div class="carte">
+        <!-- Icône "mallette" -->
+        <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M9 7V4h6v3M3 13h18"/></svg>
+        <span class="etiquette">2025 – 2027</span>
+        <h3>Alternant technicien systèmes et réseaux</h3>
+        <p>Écoles Vidal, Toulouse</p>
+        <ul>
+          <li>Support de niveau 1 et tâches de niveau 2</li>
+          <li>Réseau (VLAN) et parc sous Windows Server</li>
+          <li>Interventions pour d'autres écoles du réseau Vidal</li>
+        </ul>
+        <a class="bouton bouton-petit" href="#missions">Voir les missions</a>
+      </div>
+      <div class="carte">
+        <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M9 7V4h6v3M3 13h18"/></svg>
+        <span class="etiquette">Mars – avril 2025</span>
+        <h3>Stage · Lycée Déodat de Séverac</h3>
+        <p>Auprès de l'informaticien et du DDFPT, Toulouse</p>
+        <ul>
+          <li>Gestion du parc et des tickets dans GLPI</li>
+          <li>LinkedIn du lycée : bannière, logo et publications</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M9 7V4h6v3M3 13h18"/></svg>
+        <span class="etiquette">Nov. – déc. 2024</span>
+        <h3>Stage · Lycée des Arènes</h3>
+        <p>Auprès du DDFPT et de l'AED TICE, Toulouse</p>
+        <ul>
+          <li>Rénovation de la page ENT du lycée</li>
+          <li>Installation et mise en réseau d'une imprimante et d'un PC</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
+        <span class="etiquette">2023 – 2024</span>
+        <h3>Service civique</h3>
+        <p>Mission sport · US Carcassonne XV (rugby)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     L'ENTREPRISE D'ACCUEIL
+     ========================================================= -->
+<section class="section-sombre" id="entreprise">
+  <div class="conteneur">
+    <h2>L'entreprise d'accueil</h2>
+    <p>Les Écoles Vidal sont un établissement d'enseignement supérieur privé situé à Toulouse. L'école propose des formations de niveau BTS, bachelor et master dans plusieurs domaines, dont l'informatique, et accueille une grande partie de ses étudiants en alternance.</p>
+    <p>Le service informatique gère l'ensemble du parc de l'école : les postes des salles de cours, les ordinateurs du personnel, le réseau filaire et Wi-Fi, les serveurs et les comptes des utilisateurs. Il répond aussi aux demandes d'assistance des professeurs, des étudiants et de l'administration.</p>
+    <p>J'assure le support de niveau 1, je prends en charge certaines tâches de niveau 2 et j'interviens parfois pour d'autres écoles du réseau Vidal. Je travaille sous la responsabilité de mon tuteur, qui valide les changements importants avant leur mise en production.</p>
+
+    <h4>Les utilisateurs</h4>
+    <div class="tableau">
+      <table>
+        <tr><th>Profil</th><th>Besoins principaux</th></tr>
+        <tr><td>Étudiants</td><td>Accès aux postes des salles, au Wi-Fi et aux ressources de cours</td></tr>
+        <tr><td>Professeurs</td><td>Postes en salle, vidéoprojection, partages de fichiers, Wi-Fi</td></tr>
+        <tr><td>Personnel administratif</td><td>Postes fixes, applications de gestion, imprimantes</td></tr>
+        <tr><td>Visiteurs</td><td>Accès Internet seulement, sans accès au réseau interne</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     LES MISSIONS EN ENTREPRISE
+     Pour ajouter une mission : copier un bloc <article> en entier
+     et changer le texte.
+     ========================================================= -->
+<section id="missions">
+  <div class="conteneur">
+    <h2>Mes missions en entreprise</h2>
+    <div class="missions">
+
+      <!-- ===== MISSION 1 ===== -->
+      <article class="mission" id="mission1">
+        <div class="mission-haut">
+          <h3>Déploiement et brassage de switchs</h3>
+          <span class="etiquette">Mission 1 · Réseau</span>
+        </div>
+        <p>Plusieurs salles de classe avaient des switchs anciens, non administrables, et un câblage difficile à suivre. L'objectif était de les remplacer par des modèles administrables, de refaire le brassage proprement et de séparer les flux grâce aux VLAN.</p>
+        <div class="puces"><span class="puce">Switchs PoE</span><span class="puce">VLAN</span><span class="puce">SSH</span><span class="puce">Brassage</span></div>
+
+        <!-- <details> = bloc qu'on ouvre et ferme en cliquant sur <summary> -->
+        <details class="details">
+          <summary class="bouton bouton-petit"><span class="voir">Voir les détails</span><span class="masquer">Masquer les détails</span></summary>
+
+          <h4>Environnement technologique</h4>
+          <ul>
+            <li>Switchs administrables 48 ports avec PoE (pour les bornes Wi-Fi)</li>
+            <li>Baie de brassage, panneaux de brassage, câbles RJ45 catégorie 6</li>
+            <li>Accès en console (câble série) puis en SSH pour la configuration</li>
+            <li>Testeur de câble réseau et étiqueteuse</li>
+          </ul>
+
+          <h4>Démarche et étapes</h4>
+          <ol>
+            <li><strong>Relevé de l'existant :</strong> j'ai noté pour chaque salle les prises murales, les postes branchés et l'état du câblage.</li>
+            <li><strong>Plan d'adressage :</strong> avec mon tuteur, on a défini un VLAN par type d'usage.</li>
+            <li><strong>Préparation des switchs :</strong> nom, mot de passe administrateur, adresse IP de gestion, création des VLAN, désactivation des ports non utilisés.</li>
+            <li><strong>Installation en baie et brassage :</strong> pose du switch, câbles courts et rangés, étiquetage de chaque câble et de chaque port.</li>
+            <li><strong>Tests :</strong> vérification de chaque prise avec le testeur, puis connexion d'un poste dans chaque VLAN pour vérifier l'adresse IP reçue et l'accès aux serveurs.</li>
+            <li><strong>Documentation :</strong> mise à jour du tableau de correspondance prise / port / VLAN.</li>
+          </ol>
+          <div class="tableau">
+            <table>
+              <tr><th>VLAN</th><th>Nom</th><th>Usage</th></tr>
+              <tr><td>10</td><td>ADMIN</td><td>Personnel administratif</td></tr>
+              <tr><td>20</td><td>PROFS</td><td>Postes des professeurs</td></tr>
+              <tr><td>30</td><td>ELEVES</td><td>Postes des salles de cours</td></tr>
+              <tr><td>40</td><td>WIFI-INVITES</td><td>Accès Internet des visiteurs</td></tr>
+              <tr><td>99</td><td>GESTION</td><td>Administration des équipements réseau</td></tr>
+            </table>
+          </div>
+
+          <h4>Problèmes rencontrés et solutions</h4>
+          <div class="probleme"><strong>Une boucle réseau a ralenti toute une salle.</strong>Un câble avait été branché entre deux prises de la même salle. J'ai vérifié que le protocole Spanning Tree était activé sur les switchs pour bloquer automatiquement ce type de boucle, puis j'ai retiré le câble.</div>
+          <div class="probleme"><strong>Certaines prises murales n'étaient pas repérées.</strong>J'ai testé les prises une par une et j'ai refait l'étiquetage des deux côtés, prise et panneau de brassage.</div>
+        </details>
+
+        <div class="competences-mission">
+          <span class="etiquette">Compétences mobilisées</span>
+          <ul>
+            <li><strong>Bloc 1 :</strong> Gérer le patrimoine informatique ; Travailler en mode projet.</li>
+            <li><strong>Bloc 2 :</strong> Concevoir, installer, tester et déployer une solution d'infrastructure réseau.</li>
+            <li><strong>Bloc 3 :</strong> Sécuriser les équipements et les usages des utilisateurs.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- ===== MISSION 2 ===== -->
+      <article class="mission" id="mission2">
+        <div class="mission-haut">
+          <h3>Gestion de l'Active Directory</h3>
+          <span class="etiquette">Mission 2 · Systèmes</span>
+        </div>
+        <p>À chaque rentrée, l'école accueille de nouveaux étudiants et professeurs qui ont besoin d'un compte. L'objectif était de créer ces comptes rapidement, sans erreur, et de les ranger clairement pour leur appliquer les bonnes règles.</p>
+        <div class="puces"><span class="puce">Windows Server</span><span class="puce">AD DS</span><span class="puce">GPO</span><span class="puce">PowerShell</span></div>
+
+        <details class="details">
+          <summary class="bouton bouton-petit"><span class="voir">Voir les détails</span><span class="masquer">Masquer les détails</span></summary>
+
+          <h4>Environnement technologique</h4>
+          <ul>
+            <li>Windows Server avec le rôle Active Directory (AD DS)</li>
+            <li>Console « Utilisateurs et ordinateurs Active Directory »</li>
+            <li>Console de gestion des stratégies de groupe (GPO)</li>
+            <li>Fichier CSV des inscriptions fourni par l'administration</li>
+            <li>PowerShell pour la création des comptes en grand nombre</li>
+          </ul>
+
+          <h4>Démarche et étapes</h4>
+          <ol>
+            <li><strong>Organisation de l'annuaire :</strong> une unité d'organisation (OU) pour les élèves, une pour les professeurs, avec des sous-OU par formation et par année.</li>
+            <li><strong>Convention de nommage :</strong> identifiant sous la forme prenom.nom.</li>
+            <li><strong>Création des groupes :</strong> un groupe par classe, qui sert ensuite à donner les droits sur les dossiers partagés.</li>
+            <li><strong>Import des comptes :</strong> un script PowerShell simple lit chaque ligne du fichier CSV et crée le compte dans la bonne OU. Le mot de passe doit être changé à la première connexion.</li>
+            <li><strong>Stratégies de groupe :</strong> des GPO différentes pour les élèves (restrictions sur les postes) et pour les professeurs.</li>
+            <li><strong>Vérification :</strong> connexion avec un compte test de chaque type sur un poste de salle.</li>
+          </ol>
+
+          <h4>Problèmes rencontrés et solutions</h4>
+          <div class="probleme"><strong>Deux étudiants avaient le même prénom et le même nom.</strong>Le script s'arrêtait car l'identifiant existait déjà. J'ai ajouté une vérification : si l'identifiant existe, un chiffre est ajouté à la fin (prenom.nom2).</div>
+          <div class="probleme"><strong>Les accents du fichier CSV s'affichaient mal.</strong>Le fichier était dans le mauvais encodage. Je l'ai réenregistré en UTF-8 et j'ai retiré les accents des identifiants.</div>
+        </details>
+
+        <div class="competences-mission">
+          <span class="etiquette">Compétences mobilisées</span>
+          <ul>
+            <li><strong>Bloc 1 :</strong> Mettre à disposition des utilisateurs un service informatique ; Répondre aux incidents et aux demandes d'assistance.</li>
+            <li><strong>Bloc 2 :</strong> Exploiter, dépanner et superviser une solution d'infrastructure.</li>
+            <li><strong>Bloc 3 :</strong> Protéger les données à caractère personnel ; Sécuriser les usages (mots de passe, GPO).</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- ===== MISSION 3 ===== -->
+      <article class="mission" id="mission3">
+        <div class="mission-haut">
+          <h3>Wi-Fi sécurisé de l'école</h3>
+          <span class="etiquette">Mission 3 · Réseau et sécurité</span>
+        </div>
+        <p>L'ancien Wi-Fi utilisait une seule clé partagée, connue de presque tout le monde. L'objectif était que chacun se connecte avec son propre compte, avec un réseau séparé pour les visiteurs.</p>
+        <div class="puces"><span class="puce">WPA2-Entreprise</span><span class="puce">802.1X</span><span class="puce">RADIUS / NPS</span><span class="puce">SSID</span></div>
+
+        <details class="details">
+          <summary class="bouton bouton-petit"><span class="voir">Voir les détails</span><span class="masquer">Masquer les détails</span></summary>
+
+          <h4>Environnement technologique</h4>
+          <ul>
+            <li>Bornes Wi-Fi alimentées en PoE par les switchs de la mission 1</li>
+            <li>Contrôleur Wi-Fi pour gérer toutes les bornes au même endroit</li>
+            <li>Serveur RADIUS (rôle NPS sur Windows Server) relié à l'Active Directory</li>
+            <li>WPA2-Entreprise (802.1X) pour les comptes de l'école</li>
+          </ul>
+
+          <h4>Démarche et étapes</h4>
+          <ol>
+            <li><strong>Choix de l'architecture :</strong> un réseau « École » avec connexion par compte AD, et un réseau « Invités » isolé, avec accès Internet seulement.</li>
+            <li><strong>Configuration du RADIUS :</strong> installation de NPS, ajout du contrôleur Wi-Fi comme client RADIUS, règle qui autorise uniquement les groupes Élèves et Professeurs.</li>
+            <li><strong>Configuration des bornes :</strong> création des deux SSID, chacun associé à son VLAN.</li>
+            <li><strong>Isolation des invités :</strong> le VLAN invités n'a pas de route vers le réseau interne, et les appareils invités ne se voient pas entre eux.</li>
+            <li><strong>Tests :</strong> connexion depuis un PC portable, un Android et un iPhone, avec un compte élève, un compte professeur et un compte désactivé.</li>
+            <li><strong>Guide utilisateur :</strong> une fiche simple qui explique comment se connecter.</li>
+          </ol>
+
+          <h4>Problèmes rencontrés et solutions</h4>
+          <div class="probleme"><strong>Les téléphones Android refusaient de se connecter.</strong>Les versions récentes d'Android demandent de valider le certificat du serveur. J'ai indiqué dans le guide l'option à choisir et le nom de domaine à saisir.</div>
+          <div class="probleme"><strong>Un compte désactivé pouvait encore se connecter pendant quelques minutes.</strong>Cela venait de la réplication entre contrôleurs de domaine. Avec mon tuteur, on a jugé le délai acceptable et je l'ai noté dans la documentation.</div>
+        </details>
+
+        <div class="competences-mission">
+          <span class="etiquette">Compétences mobilisées</span>
+          <ul>
+            <li><strong>Bloc 1 :</strong> Mettre à disposition des utilisateurs un service informatique ; Travailler en mode projet.</li>
+            <li><strong>Bloc 2 :</strong> Concevoir et installer une solution d'infrastructure réseau.</li>
+            <li><strong>Bloc 3 :</strong> Garantir la disponibilité, l'intégrité et la confidentialité des services ; Cybersécuriser une infrastructure réseau.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- ===== MISSION 4 ===== -->
+      <article class="mission" id="mission4">
+        <div class="mission-haut">
+          <h3>Gestion de parc avec GLPI</h3>
+          <span class="etiquette">Mission 4 · Gestion de parc et support</span>
+        </div>
+        <p>L'inventaire était tenu dans un tableur rarement à jour, et les demandes d'assistance arrivaient par mail ou à l'oral. L'objectif était d'installer GLPI pour avoir un inventaire automatique et un outil de tickets.</p>
+        <div class="puces"><span class="puce">GLPI 10</span><span class="puce">Debian</span><span class="puce">Apache · PHP · MariaDB</span><span class="puce">LDAP</span></div>
+
+        <details class="details">
+          <summary class="bouton bouton-petit"><span class="voir">Voir les détails</span><span class="masquer">Masquer les détails</span></summary>
+
+          <h4>Environnement technologique</h4>
+          <ul>
+            <li>Serveur Linux Debian (machine virtuelle)</li>
+            <li>Apache, PHP et MariaDB (base de données de GLPI)</li>
+            <li>GLPI version 10 et GLPI Agent sur les postes Windows</li>
+            <li>Liaison LDAP avec l'Active Directory</li>
+          </ul>
+
+          <h4>Démarche et étapes</h4>
+          <ol>
+            <li><strong>Préparation du serveur :</strong> installation de Debian, Apache, PHP et MariaDB. Création d'une base et d'un utilisateur dédiés à GLPI.</li>
+            <li><strong>Installation de GLPI :</strong> par l'interface web, puis changement des mots de passe des comptes par défaut.</li>
+            <li><strong>Liaison avec l'Active Directory :</strong> les utilisateurs se connectent à GLPI avec leur compte habituel.</li>
+            <li><strong>Inventaire automatique :</strong> GLPI Agent déployé sur les postes, qui remontent seuls leurs informations.</li>
+            <li><strong>Tickets :</strong> catégories (réseau, compte, matériel, imprimante, logiciel) et règles qui attribuent le ticket au bon technicien.</li>
+            <li><strong>Présentation au personnel :</strong> comment déclarer une demande.</li>
+          </ol>
+
+          <h4>Problèmes rencontrés et solutions</h4>
+          <div class="probleme"><strong>Certains postes n'apparaissaient pas dans l'inventaire.</strong>Le pare-feu bloquait la communication entre l'agent et le serveur. J'ai ajouté une règle pour autoriser ce flux, puis forcé un inventaire.</div>
+          <div class="probleme"><strong>L'import LDAP récupérait aussi des comptes désactivés.</strong>J'ai modifié le filtre LDAP dans GLPI pour ne récupérer que les comptes actifs.</div>
+        </details>
+
+        <div class="competences-mission">
+          <span class="etiquette">Compétences mobilisées</span>
+          <ul>
+            <li><strong>Bloc 1 :</strong> Gérer le patrimoine informatique ; Répondre aux incidents et aux demandes d'assistance ; Mettre à disposition un service informatique.</li>
+            <li><strong>Bloc 2 :</strong> Installer, tester, déployer et exploiter une solution d'infrastructure.</li>
+            <li><strong>Bloc 3 :</strong> Sécuriser les équipements et les usages.</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     LES 6 COMPÉTENCES DU BLOC 1 (une carte par compétence)
+     ========================================================= -->
+<section class="section-sombre" id="competences">
+  <div class="conteneur">
+    <h2>Compétences du bloc 1</h2>
+    <div class="grille">
+      <div class="carte">
+        <span class="etiquette">Compétence 1</span>
+        <h3>Gérer le patrimoine informatique</h3>
+        <ul>
+          <li>Recensement et documentation du câblage (mission 1)</li>
+          <li>Inventaire automatique avec GLPI (mission 4)</li>
+          <li>Gestion du parc au lycée Déodat de Séverac</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <span class="etiquette">Compétence 2</span>
+        <h3>Répondre aux incidents et aux demandes</h3>
+        <ul>
+          <li>Support de niveau 1 et tâches de niveau 2 en alternance</li>
+          <li>Comptes bloqués et mots de passe (mission 2)</li>
+          <li>Tickets GLPI (mission 4 et stage)</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <span class="etiquette">Compétence 3</span>
+        <h3>Développer la présence en ligne</h3>
+        <ul>
+          <li>Rénovation de la page ENT du lycée des Arènes</li>
+          <li>LinkedIn du lycée Déodat de Séverac</li>
+          <li>Site Ecotopia et ce portfolio</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <span class="etiquette">Compétence 4</span>
+        <h3>Travailler en mode projet</h3>
+        <ul>
+          <li>Planification du déploiement des switchs (mission 1)</li>
+          <li>Projet Wi-Fi sécurisé (mission 3)</li>
+          <li>Escape game en équipe (certificat SNO)</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <span class="etiquette">Compétence 5</span>
+        <h3>Mettre à disposition un service</h3>
+        <ul>
+          <li>Comptes élèves et professeurs (mission 2)</li>
+          <li>Wi-Fi et guide de connexion (mission 3)</li>
+          <li>Outil de tickets GLPI (mission 4)</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <span class="etiquette">Compétence 6</span>
+        <h3>Organiser son développement professionnel</h3>
+        <ul>
+          <li>Veille technologique en cybersécurité</li>
+          <li>Certification ANSSI</li>
+          <li>Ce portfolio, hébergé sur GitHub</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     TABLEAU DE SYNTHÈSE
+     ✓ = la mission couvre la compétence
+     ========================================================= -->
+<section id="synthese">
+  <div class="conteneur">
+    <h2>Tableau de synthèse</h2>
+    <div class="tableau">
+      <table class="synthese">
+        <tr><th>Compétence</th><th>M1</th><th>M2</th><th>M3</th><th>M4</th><th>Parcours</th></tr>
+        <tr><td>Gérer le patrimoine informatique</td><td class="coche">✓</td><td></td><td></td><td class="coche">✓</td><td class="coche">✓</td></tr>
+        <tr><td>Répondre aux incidents et aux demandes d'assistance et d'évolution</td><td></td><td class="coche">✓</td><td></td><td class="coche">✓</td><td class="coche">✓</td></tr>
+        <tr><td>Développer la présence en ligne de l'organisation</td><td></td><td></td><td></td><td></td><td class="coche">✓</td></tr>
+        <tr><td>Travailler en mode projet</td><td class="coche">✓</td><td></td><td class="coche">✓</td><td></td><td class="coche">✓</td></tr>
+        <tr><td>Mettre à disposition des utilisateurs un service informatique</td><td></td><td class="coche">✓</td><td class="coche">✓</td><td class="coche">✓</td><td></td></tr>
+        <tr><td>Organiser son développement professionnel</td><td></td><td></td><td></td><td></td><td class="coche">✓</td></tr>
+      </table>
+    </div>
+    <p class="note">Colonne Parcours : stages (parc et tickets GLPI, page ENT, LinkedIn du lycée), projets du certificat SNO (site Ecotopia, escape game), ce portfolio, ma veille et ma certification ANSSI.</p>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     OUTILS ET VEILLE TECHNOLOGIQUE
+     ========================================================= -->
+<section class="section-sombre" id="veille">
+  <div class="conteneur">
+    <h2>Outils et veille</h2>
+    <div class="grille">
+      <div class="carte">
+        <span class="etiquette">Systèmes et réseaux</span>
+        <div class="puces"><span class="puce">Windows Server</span><span class="puce">Active Directory</span><span class="puce">GPO</span><span class="puce">VLAN</span><span class="puce">RADIUS</span><span class="puce">Debian</span><span class="puce">Filius</span></div>
+      </div>
+      <div class="carte">
+        <span class="etiquette">Parc, support et code</span>
+        <div class="puces"><span class="puce">GLPI</span><span class="puce">Odoo</span><span class="puce">KeePass</span><span class="puce">PowerShell</span><span class="puce">Python</span><span class="puce">Java</span><span class="puce">HTML / CSS</span></div>
+      </div>
+      <div class="carte">
+        <span class="etiquette">Langues et certifications</span>
+        <div class="puces"><span class="puce">Anglais B1</span><span class="puce">Espagnol B2</span><span class="puce">Certification ANSSI</span><span class="puce">PSC1</span><span class="puce">Permis B</span></div>
+      </div>
+    </div>
+
+    <div class="carte" style="margin-top: 20px;">
+      <span class="etiquette">Veille technologique</span>
+      <h3>La cybersécurité</h3>
+      <p>C'est un domaine qui évolue vite et qui touche directement mon travail : comptes utilisateurs, Wi-Fi, mots de passe, mises à jour. Je suis des blogs techniques, des newsletters et des sites spécialisés avec Flipboard, les alertes Google et Scoop.it. Je classe ce que je trouve avec des dossiers et des tags, et je prends un moment chaque semaine pour faire le point.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================================================
+     CONTACT
+     ========================================================= -->
+<section class="contact" id="contact">
+  <div class="conteneur">
+    <h2>Me contacter</h2>
+    <p>Pour toute question sur mon parcours ou mes missions :</p>
+    <span class="email" id="email">tomaslatour5@gmail.com</span>
+    <button class="bouton" id="bouton-copier" type="button">Copier l'adresse</button>
+  </div>
+</section>
+
+<footer>
+  <div class="conteneur">Tomas Latour · BTS SIO option SISR · Écoles Vidal, Toulouse · 2025-2027</div>
+</footer>
+
+
+<script>
+/* =========================================================
+   JAVASCRIPT : les 3 petites choses "qui bougent"
+   ========================================================= */
+
+/* ---------- 1. Le bouton mode clair / mode sombre ---------- */
+var boutonTheme = document.getElementById("bouton-theme");
+var racine = document.documentElement;   /* la balise <html> */
+
+/* Renvoie le thème affiché en ce moment : "dark" ou "light" */
+function themeActuel() {
+  if (racine.dataset.theme) return racine.dataset.theme;
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
+/* Applique un thème et change le texte du bouton */
+function appliquerTheme(theme) {
+  racine.dataset.theme = theme;   /* ajoute data-theme="..." sur <html> */
+  boutonTheme.textContent = theme === "dark" ? "Mode clair" : "Mode sombre";
+}
+
+/* Au chargement : on reprend le choix enregistré, sinon le thème de l'ordinateur */
+var choixEnregistre = null;
+try { choixEnregistre = localStorage.getItem("theme"); } catch (e) {}
+appliquerTheme(choixEnregistre || themeActuel());
+
+/* Au clic : on inverse le thème et on l'enregistre dans le navigateur */
+boutonTheme.addEventListener("click", function () {
+  var nouveau = themeActuel() === "dark" ? "light" : "dark";
+  appliquerTheme(nouveau);
+  try { localStorage.setItem("theme", nouveau); } catch (e) {}
+});
+
+
+/* ---------- 2. Le bouton "Copier l'adresse" ---------- */
+document.getElementById("bouton-copier").addEventListener("click", function () {
+  var bouton = this;
+  navigator.clipboard.writeText("tomaslatour5@gmail.com")
+    .then(function () { bouton.textContent = "Adresse copiée"; })
+    .catch(function () {
+      /* si la copie est refusée, on sélectionne l'adresse pour que le visiteur la copie lui-même */
+      window.getSelection().selectAllChildren(document.getElementById("email"));
+      bouton.textContent = "Adresse sélectionnée";
+    });
+});
+
+
+/* ---------- 3. Le réseau animé de l'accueil ----------
+   Des points (comme des machines) bougent doucement.
+   Quand deux points sont proches, on trace un trait entre eux
+   (comme un lien réseau). */
+var canvas = document.getElementById("reseau");
+var ctx = canvas.getContext("2d");   /* "ctx" = le pinceau pour dessiner */
+var points = [];
+var DISTANCE_LIEN = 130;             /* distance max (en pixels) pour relier deux points */
+
+/* Adapte la taille du dessin à la taille de l'accueil et crée les points */
+function preparer() {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  var nombre = Math.round(canvas.width * canvas.height / 9000);  /* plus d'écran = plus de points */
+  points = [];
+  for (var i = 0; i < nombre; i++) {
+    points.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,   /* vitesse horizontale */
+      vy: (Math.random() - 0.5) * 0.4    /* vitesse verticale */
+    });
+  }
+}
+
+/* Dessine une image du réseau */
+function dessiner() {
+  var couleur = getComputedStyle(racine).getPropertyValue("--reseau").trim();  /* couleur du thème */
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (var i = 0; i < points.length; i++) {
+    var p = points[i];
+
+    /* les traits entre ce point et les points proches */
+    for (var j = i + 1; j < points.length; j++) {
+      var q = points[j];
+      var distance = Math.hypot(p.x - q.x, p.y - q.y);
+      if (distance < DISTANCE_LIEN) {
+        ctx.strokeStyle = "rgba(" + couleur + "," + (0.35 * (1 - distance / DISTANCE_LIEN)) + ")";
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+      }
+    }
+
+    /* le point lui-même */
+    ctx.fillStyle = "rgba(" + couleur + ",0.8)";
+    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+/* Fait avancer les points, les fait rebondir sur les bords, puis redessine */
+function animer() {
+  points.forEach(function (p) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > canvas.width) p.vx = -p.vx;
+    if (p.y < 0 || p.y > canvas.height) p.vy = -p.vy;
+  });
+  dessiner();
+  requestAnimationFrame(animer);   /* redemande une image (environ 60 fois par seconde) */
+}
+
+preparer();
+window.addEventListener("resize", preparer);
+
+/* Si le visiteur a demandé "moins d'animations" dans son système, on dessine sans faire bouger */
+if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  dessiner();
+  boutonTheme.addEventListener("click", dessiner);
+} else {
+  animer();
+}
+</script>
+</body>
+</html>
